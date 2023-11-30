@@ -1,0 +1,22 @@
+
+services:
+  springboot-application:
+    image: racembenrhayem/gl5-tp-devops-docker-springboot-mongo
+    ports:
+      - 8081:8081
+    networks:
+      - springboot-mongo-network
+    depends_on:
+      - mongo-springboot
+  mongo-springboot: 
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - /home/racem/GL5/devops/TP-Docker/mongodb-container-data:/data/db
+    container_name: mongo-for-springboot
+    networks:
+      - springboot-mongo-network
+networks:
+  springboot-mongo-network : {}
+  

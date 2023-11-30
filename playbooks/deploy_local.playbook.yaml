@@ -1,0 +1,35 @@
+- name: Deploy SpringBoot with mongoDB on local machine
+  hosts: localhost
+
+  tasks:
+    - name: pull SpringBoot App latest Image (the one built using jenkins)
+      ansible.builtin.docker_image:
+        name: '{{ IMAGE_TAG }}'
+        source: pull
+    - name: pull mongoDB Image
+      ansible.builtin.docker_image:
+        name: mongo
+        source: pull
+    - name: Create Network
+      ansible.builtin.docker_network:
+        name: springboot_mongo_network
+    - name: Create App Container from SpringBoot Image
+      ansible.builtin.docker_container:
+        name: gl5_tp2_devops_springboot
+        image: '{{ IMAGE_TAG }}'
+        ports:
+          - "8081:8081"
+        networks:
+          - name: springboot_mongo_network
+        state: started
+    - name: Create mongoDB Container
+      ansible.builtin.docker_container:
+        name: mongo-for-springboot
+        image: mongo
+        ports:
+          - "27017:27017"
+        networks:
+          - name: springboot_mongo_network
+        volumes:
+          - '{{ VOLUME_PATH }}:/data/db'
+        state: started
